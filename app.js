@@ -34,7 +34,7 @@ app.get("/", (req, res) => {
     res.render("home")
 })
 
-app.get("/secret", (req, res) => {
+app.get("/secret", isLoggedIn, (req, res) => {
     res.render("secret")
 })
 
@@ -77,6 +77,22 @@ app.post("/login", passport.authenticate("local", {
 }), (req, res) => {
     
 })
+
+app.get("/logout", (req, res) => {
+    req.logout()
+    res.redirect('/')
+})
+
+// this function will act as middleware for the `secret` route
+function isLoggedIn(req, res, next) {
+    // isAuthenticated is a built in function of passport
+    if(req.isAuthenticated()) { 
+        // if the user is logged in, go to the next argument (the callback that takes user to '/secret')
+        return next()
+    }
+    // if user is not logged, redirect back to login page
+    res.redirect("/login")
+}
 
 app.listen(process.env.PORT, process.env.IP, () => {
     console.log("Server is Running....")
