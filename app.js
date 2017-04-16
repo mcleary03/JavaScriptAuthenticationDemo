@@ -24,6 +24,7 @@ app.use(passport.initialize())
 app.use(passport.session())
 app.use(bodyParser.urlencoded({ extended: true }))
 
+passport.use(new LocalStrategy(User.authenticate()))
 passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser())
 
@@ -59,6 +60,22 @@ app.post("/register", (req, res) => {
             })
         }
     })
+})
+
+// LOGIN ROUTES
+
+app.get("/login", (req, res) => {
+    res.render("login")
+})
+
+// using passport as middleware
+//  it is passed in to post as a second argument instead of in the callback
+//   passport automatically takes the username and password from the req.body
+app.post("/login", passport.authenticate("local", {
+    successRedirect: "/secret",
+    failureRedirect: "/login"
+}), (req, res) => {
+    
 })
 
 app.listen(process.env.PORT, process.env.IP, () => {
